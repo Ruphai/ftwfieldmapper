@@ -1,0 +1,17 @@
+name: ftw_fieldmapper
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - rasterio
+  - matplotlib
+  - scipy
+  - numpy
+  - scikit-image
+  - geopandas
+  - pyproj
+  - libgdal-arrow-parquet
+  - notebook
+  - ipykernel
+  - ipywidgets
+  # - segmentation_models_pytorch
