@@ -13,7 +13,26 @@ The approach taken in this project is implemented in two phases:
 ### Lacuna Labels
 [Lacuna Labels](https://github.com/agroimpacts/lacunalabels)
 
+To access the data, use the AWS CLI to download the data to a local
+directory. We recommend making a new directory called “data” in your
+home directory, changing into that, and then using the `sync` function,
+as follows (note: this assumes a \*nix-based terminal.
+
+``` bash
+cd ~
+mkdir data
+cd data
+aws s3 sync s3://africa-field-boundary-labels/ . --dryrun
+aws s3 sync s3://africa-field-boundary-labels/ . 
+```
+
+If the second to last line previews a successful download, run the last
+line, which will download all data on the bucket into your directory.
+
+The AWS S3 console can also be used to download the data.
+
 ## How to run pipeline
+FTW Model Weight: https://huggingface.co/torchgeo/fields-of-the-world/tree/main 
 1. How to run notebook in an attached docker file, 
 2. Report in Quarto
 
