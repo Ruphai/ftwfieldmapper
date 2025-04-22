@@ -7,16 +7,18 @@ Author: Rufai Omowunmi Balogun
 import os
 import sys
 import pathlib
+import random
+import math
 import numpy as np
 import pandas as pd
+
 import rasterio
+from rasterio.enums import Resampling
 import matplotlib.pyplot as plt
 import pathlib as Path
 import random
 from scipy.ndimage import label
 from skimage.color import label2rgb
-import numpy as np
-
 
 def print_information(wina, winb, sem2, sem3, inst):
     """ Function to print detailed information about the images and masks"""
@@ -105,11 +107,51 @@ def plot_ftw_data(window_a_file, window_b_file, semantic_2_class_file, semantic_
     plt.show()
 
 
+def show_image_and_mask(
+    row,
+    root_dir: str = ".",
+    img_col: str = "image",
+    mask_col: str = "label",
+    rgb_bands: tuple[int, int, int] | None = (1, 2, 3),
+    mask_cmap: str = "tab20",
+    alpha: float = 1.0,
+):
+    img_path  = os.path.join(root_dir, str(row[img_col]))
+    img_path = img_path[:-4]
+    mask_path = os.path.join(root_dir, str(row[mask_col]))
 
-import random
-import math
-import pandas as pd
-import matplotlib.pyplot as plt
+    if not (os.path.exists(img_path) and os.path.exists(mask_path)):
+        raise FileNotFoundError(f"Cannot find {img_path} or {mask_path}")
+    with rasterio.open(img_path) as src:
+        if rgb_bands is None:
+            rgb = src.read(1, out_dtype="float32", resampling=Resampling.nearest)
+            rgb = np.clip(rgb, np.nanpercentile(rgb, 2), np.nanpercentile(rgb, 98))
+            img_rgb = (rgb - rgb.min()) / (rgb.max() - rgb.min() + 1e-6)
+            img_rgb = np.repeat(img_rgb[None, ...], 3, axis=0)  
+        else:
+            rgb = src.read(rgb_bands, out_dtype="float32", resampling=Resampling.nearest)
+            for i in range(rgb.shape[0]):
+                p2, p98 = np.nanpercentile(rgb[i], (2, 98))
+                rgb[i] = np.clip(rgb[i], p2, p98)
+                rgb[i] = (rgb[i] - p2) / (p98 - p2 + 1e-6)
+            img_rgb = rgb
+    
+    img_rgb = np.moveaxis(img_rgb, 0, -1)  # (H,W,C)
+
+    with rasterio.open(mask_path) as msk:
+        mask = msk.read(1)
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6), dpi=120)
+
+    axs[0].imshow(img_rgb)
+    axs[0].set_title("Image")
+    axs[0].axis("off")
+    axs[1].imshow(mask, cmap=mask_cmap, alpha=alpha, interpolation="nearest")
+    axs[1].set_title("Mask")
+    axs[1].axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
 
 def show_random_samples_by_class(
     df: pd.DataFrame,
