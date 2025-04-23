@@ -1,17 +1,26 @@
 name: ftw_fieldmapper
 channels:
   - conda-forge
+  - nvidia
+  - pytorch
 dependencies:
-  - python
-  - rasterio
-  - matplotlib
-  - scipy
+  - python=3.10
   - numpy
+  - scipy
+  - matplotlib
   - scikit-image
-  - geopandas
-  - pyproj
-  - libgdal-arrow-parquet
-  - notebook
+  - rasterio
+  - rioxarray
+  - geopandas  
+  - pyarrow 
+  - pytorch=2.3.*        
+  - torchvision
+  - pytorch-cuda=12.1
+  - torchmetrics
+  - torchgeo           
+  - kornia
   - ipykernel
-  - ipywidgets
-  # - segmentation_models_pytorch
+  - ipywidgets          
+  - pip                
+  - pip:
+      - segmentation_models_pytorch==0.4.*
