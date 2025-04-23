@@ -67,7 +67,7 @@ class FTW(NonGeoDataset):
 
     def __init__(
         self,
-        root: str = "data/ftw",
+        root: str = "/home/airg/rbalogun/ftwfieldmapper/data/ftw_data",
         countries: Union[Sequence[str], str] = None,
         split: str = "train",
         transforms: Optional[Callable[[dict[str, Any]], dict[str, Any]]] = None,
