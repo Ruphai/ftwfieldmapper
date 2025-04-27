@@ -1,0 +1,83 @@
+## parameters for data loading and model specification
+Train_Validate:
+    # data loader parameters
+    data_path: '/home/airg/data/labels/cropland/' #source_dir 
+    log_dir: '/home/airg/rbalogun/ftwfieldmapper/logs'
+    train_csv_name: '/home/airg/rbalogun/ftwfieldmapper/data/croplands3-2.0.0_splits.csv'
+ 
+    data_size: 224  # Size of chips that is not buffered. (i.e., the size of labels)
+    buffer: 0  # one_side_buffer
+    buffer_comp: 0  # Buffer used when creating composite
+    img_path_cols: ['image']
+    label_path_col: 'label'
+    label_group: ["1a", "1b", "1d", "2", "4"]
+    apply_normalization: True
+    normal_strategy: "min_max"
+    stat_procedure: 'lab'
+    global_stats: null
+    catalog_index: null
+    trans: null
+    parallel: null
+
+    # explicilty pass the default values for the following **kwargs
+    scale_factor: (0.75, 1.5)
+    crop_strategy: "center"
+    rotation_degree: (-180, -90, 90, 180)
+    #bshiift_subs:  # this was not defined and used in datatorch.py
+    sigma_range: [0.03, 0.07]
+    br_range: [-0.02, 0.02]
+    contrast_range: [0.9, 1.2]
+    bshift_gamma_range: (0.2, 2.0)
+    patch_shift: True
+    downfactor: 32
+    clip_val: null
+    nodata: []
+
+    train_batch: 32
+    validate_batch: 10
+
+    # model compiler parameters
+    model: unet_att_d #attn_unet_d
+    model_compiler_buffer: 0
+    class_mapping: {0: 'non-field', 1: 'field', 2: 'field boundary'}
+    model_working_dir: '/home/airg/sxiong/summer2024/model_working'
+    model_out_dir: './home/airg/rbalogun/ftwfieldmapper/model_out'
+    gpu_devices: [0]
+    use_sync_bn: False
+    model_init_type: "kaiming"
+    params_init: '/home/airg/sxiong/summer2024/saved_experiments/exp11/unet_att_d_ep50/chkpt/best_model.pth'
+    freeze_params: list(range(58))
+
+    n_classes: 3
+    channels: 4
+
+    model_kwargs: {filter_config: [64, 128, 256, 512, 1024, 2048],
+                   block_num: [2, 2, 2, 2, 2, 2], 
+                   dropout_rate: 0.1, 
+                   dropout_type: 'traditional', 
+                   upmode: 'deconv_2', 
+                   use_skipAtt: False}
+    
+    epoch: 50
+    optimizer_name: SAM
+    learning_rate_init: 0.01
+    learning_rate_policy: "StepLR"
+    criterion: LocallyWeightedTverskyFocalLoss()
+    momentum: 0.95
+    resume: False
+    checkpoint_interval: 20
+    resume_epoch: null
+    early_stopping_patience: 10 
+    min_delta: 0.001
+    warmup_period: 10
+    val_metric_fname: validate_metrics_mm_lab.csv
+
+Test:
+    separate_test_csv: '/home/airg/sxiong/summer2024/train_catalog/cropland3-2.1.1-TESTONLY_zam.csv'
+    saved_params: '/home/airg/sxiong/summer2024/saved_experiments/exp11-001/unet_att_d_ep50/chkpt/best_model.pth'
+    #saved_params: '/home/airg/sxiong/summer2024/saved_experiments/exp11-001/unet_att_d_ep50/chkpt/20_checkpoint.pth.tar'
+  
+  
+    
+  
+  
