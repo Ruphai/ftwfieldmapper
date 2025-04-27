@@ -1,3 +1,5 @@
 model_weights/*
 data/ftw_data/*
 **__pycache__**
+logs/*
+model_out/*
