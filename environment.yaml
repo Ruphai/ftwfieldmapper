@@ -8,7 +8,9 @@ dependencies:
   - numpy
   - scipy
   - matplotlib
+  - seaborn
   - scikit-image
+  - opencv
   - rasterio
   - rioxarray
   - geopandas  
