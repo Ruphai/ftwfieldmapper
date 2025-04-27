@@ -41,7 +41,7 @@ Train_Validate:
     model_compiler_buffer: 0
     class_mapping: {0: 'non-field', 1: 'field', 2: 'field boundary'}
     model_working_dir: '/home/airg/sxiong/summer2024/model_working'
-    model_out_dir: './home/airg/rbalogun/ftwfieldmapper/model_out'
+    model_out_dir: '/home/airg/rbalogun/ftwfieldmapper/model_out'
     gpu_devices: [0]
     use_sync_bn: False
     model_init_type: "kaiming"
