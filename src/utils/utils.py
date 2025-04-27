@@ -260,6 +260,7 @@ def _show_single_pair_into_axes(
     ax_msk.imshow(mask, cmap=mask_cmap, alpha=alpha, interpolation="nearest")
     ax_msk.axis("off")
 
+import math, pathlib, numpy as np, pandas as pd
 
 def split_by_rscore(
     csv_path: str | pathlib.Path,
@@ -267,50 +268,67 @@ def split_by_rscore(
     class_col: str = "Class",
     score_col: str = "Rscore",
     train_frac: float = 0.60,
-    val_frac: float = 0.20,
-    test_frac: float = 0.20,
-    seed: int | None = 42,
-):
-    csv_path = pathlib.Path(csv_path)
-    out_dir = pathlib.Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    val_frac: float   = 0.20,
+    test_frac: float  = 0.20,
+    seed: int | None  = 42,
+    na_goes_last: bool = True,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
     if not math.isclose(train_frac + val_frac + test_frac, 1.0, abs_tol=1e-6):
-        raise ValueError("train_frac + val_frac + test_frac must equal 1")
+        raise ValueError("train_frac + val_frac + test_frac must equal 1.0")
 
     rng = np.random.default_rng(seed)
+    csv_path, out_dir = map(pathlib.Path, (csv_path, out_dir))
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     df = pd.read_csv(csv_path)
-    df[score_col] = df[score_col].fillna(-np.inf)
+    df = df.drop(columns=["assignment_id", "rscore", "rscore2", "x", "y", "farea", "nflds"], errors="ignore")
+
+    # NEW: remove rows with any NaNs left
+    df = df.dropna().reset_index(drop=True)
+
+    # Treat NaNs in the score_col specifically (though now unlikely after dropna)
+    fill_val = np.inf if not na_goes_last else -np.inf
+    df[score_col] = df[score_col].fillna(fill_val)
 
     train_parts, val_parts, test_parts = [], [], []
-    for cls, group in df.groupby(class_col):
-        shuffled = group.sample(frac=1.0, random_state=rng.integers(0, 1e9))
-        sorted_grp = shuffled.sort_values(score_col, ascending=False)
-        n = len(sorted_grp)
+
+    for cls, grp in df.groupby(class_col, sort=False):
+        grp = grp.sample(frac=1.0, random_state=rng.integers(0, 1e9))
+        grp = grp.sort_values(score_col, ascending=False)
+        n = len(grp)
         n_train = int(round(n * train_frac))
         n_val   = int(round(n * val_frac))
-        n_test  = n - n_train - n_val
-        train_parts.append(sorted_grp.iloc[:n_train])
-        val_parts.append(sorted_grp.iloc[n_train : n_train + n_val])
-        test_parts.append(sorted_grp.iloc[n_train + n_val :])
 
-    train_df = pd.concat(train_parts).reset_index(drop=True)
-    val_df   = pd.concat(val_parts).reset_index(drop=True)
-    test_df  = pd.concat(test_parts).reset_index(drop=True)
+        train_parts.append(grp.iloc[:n_train])
+        val_parts  .append(grp.iloc[n_train : n_train + n_val])
+        test_parts .append(grp.iloc[n_train + n_val :])
+
+    def _finalise(split_parts: list[pd.DataFrame], tag: str) -> pd.DataFrame:
+        df_split = (
+            pd.concat(split_parts, ignore_index=True)
+              .sample(frac=1.0, random_state=rng.integers(0, 1e9))  # shuffle rows
+              .assign(usage=tag)
+        )
+        return df_split
+
+    train_df = _finalise(train_parts, "train")
+    val_df   = _finalise(val_parts,   "validate")
+    test_df  = _finalise(test_parts,  "test")
 
     train_df.to_csv(out_dir / "train.csv", index=False)
-    val_df.to_csv(out_dir / "val.csv", index=False)
+    val_df.to_csv(out_dir / "validate.csv", index=False)
     test_df.to_csv(out_dir / "test.csv", index=False)
 
-    def _describe(df_) -> str:
-        m, med = df_[score_col].replace(-np.inf, np.nan).agg(["mean", "median"])
-        return f"n={len(df_):6,d} | mean={m:5.3f} | median={med:5.3f}"
+    def _desc(d: pd.DataFrame) -> str:
+        m, md = d[score_col].replace([-np.inf, np.inf], np.nan).agg(["mean", "median"])
+        return f"n={len(d):6,d} • mean={m:6.3f} • median={md:6.3f}"
 
     print(
-        f" Split complete — saved to {out_dir}\n"
-        f"    • train: {_describe(train_df)}\n"
-        f"    • val  : {_describe(val_df)}\n"
-        f"    • test : {_describe(test_df)}"
+        f"Split complete → files in {out_dir}\n"
+        f"  ▸ train    { _desc(train_df) }\n"
+        f"  ▸ validate { _desc(val_df)   }\n"
+        f"  ▸ test     { _desc(test_df)  }"
     )
 
     return train_df, val_df, test_df
