@@ -40,12 +40,12 @@ Train_Validate:
     model: unet_att_d #attn_unet_d
     model_compiler_buffer: 0
     class_mapping: {0: 'non-field', 1: 'field', 2: 'field boundary'}
-    model_working_dir: '/home/airg/sxiong/summer2024/model_working'
+    model_working_dir: '/home/airg/rbalogun/ftwfieldmapper/model_work'
     model_out_dir: '/home/airg/rbalogun/ftwfieldmapper/model_out'
     gpu_devices: [0]
     use_sync_bn: False
     model_init_type: "kaiming"
-    params_init: '/home/airg/sxiong/summer2024/saved_experiments/exp11/unet_att_d_ep50/chkpt/best_model.pth'
+    params_init: '/home/airg/rbalogun/ftwfieldmapper/model_out/experiments/'
     freeze_params: list(range(58))
 
     n_classes: 3

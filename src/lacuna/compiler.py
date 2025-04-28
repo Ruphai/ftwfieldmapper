@@ -4,7 +4,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from torch import optim
 from torch.nn import init
 from torch.optim.lr_scheduler import _LRScheduler
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 #from tensorboardX import SummaryWriter
 
 import sys
@@ -292,7 +292,7 @@ class ModelCompiler:
         start = datetime.now()
 
         # Tensorboard writer setting
-        writer = SummaryWriter('../')
+        # writer = SummaryWriter('../')
 
         lr = lr_init
         # lr_decay = lr_decay if isinstance(lr_decay,tuple) else (lr_decay,1)
