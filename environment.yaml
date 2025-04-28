@@ -5,6 +5,12 @@ channels:
   - pytorch
 dependencies:
   - python=3.10
+  - pytorch=2.3.* 
+  - torchvision
+  - pytorch-cuda=12.1 
+  - cuda-toolkit=11.8    
+  - torchmetrics
+  - torchgeo    
   - numpy
   - scipy
   - matplotlib
@@ -14,12 +20,7 @@ dependencies:
   - rasterio
   - rioxarray
   - geopandas  
-  - pyarrow 
-  - pytorch=2.3.*        
-  - torchvision
-  - pytorch-cuda=12.1
-  - torchmetrics
-  - torchgeo           
+  - pyarrow          
   - kornia
   - ipykernel
   - ipywidgets          
