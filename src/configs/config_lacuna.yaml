@@ -41,7 +41,7 @@ Train_Validate:
     model_compiler_buffer: 0
     class_mapping: {0: 'non-field', 1: 'field', 2: 'field boundary'}
     model_working_dir: '/home/airg/rbalogun/ftwfieldmapper/model_work'
-    model_out_dir: '/home/airg/rbalogun/ftwfieldmapper/model_out'
+    model_out_dir: '/home/airg/rbalogun/ftwfieldmapper/model_out/exp_tversky_loss/'
     gpu_devices: [0]
     use_sync_bn: False
     model_init_type: "kaiming"
@@ -73,8 +73,9 @@ Train_Validate:
     val_metric_fname: validate_metrics_mm_lab.csv
 
 Test:
-    separate_test_csv: '/home/airg/sxiong/summer2024/train_catalog/cropland3-2.1.1-TESTONLY_zam.csv'
-    saved_params: '/home/airg/sxiong/summer2024/saved_experiments/exp11-001/unet_att_d_ep50/chkpt/best_model.pth'
+    separate_test_csv: '/home/airg/rbalogun/ftwfieldmapper/model_out/exp_tversky_loss/lacuna_TESTONLY.csv'
+    saved_params: '/home/airg/rbalogun/ftwfieldmapper/model_out/exp_tversky_loss/chkpt/best_model.pth'
+    
     #saved_params: '/home/airg/sxiong/summer2024/saved_experiments/exp11-001/unet_att_d_ep50/chkpt/20_checkpoint.pth.tar'
   
   
