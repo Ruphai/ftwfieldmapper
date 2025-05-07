@@ -34,7 +34,7 @@ Train_Validate:
     nodata: []
 
     train_batch: 32
-    validate_batch: 10
+    validate_batch: 16
 
     # model compiler parameters
     model: unet_att_d #attn_unet_d
