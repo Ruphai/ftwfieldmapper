@@ -229,17 +229,17 @@ def evaluate(model, dataloader, num_classes, class_mapping, device,
         "Overall Accuracy": overall_accuracy,
         "Mean Accuracy": mean_accuracy,
         "Mean IoU": mean_IoU,
-        "mean Precision": mean_precision,
-        "mean Recall": mean_recall,
+        "Mean Precision": mean_precision,
+        "Mean Recall": mean_recall,
         "Mean F1 Score": mean_f1_score
     }
 
     # print confusion matrix
-    if out_name:
-        plot_name = out_name.rsplit(".", 1)[0] + ".png"
-        evaluator.plot_confusion_matrix(class_mapping, plot_name)
-    else: 
-        evaluator.plot_confusion_matrix(class_mapping)
+    # if out_name:
+    #     plot_name = out_name.rsplit(".", 1)[0] + ".png"
+    #     evaluator.plot_confusion_matrix(class_mapping, plot_name)
+    # else: 
+    #     evaluator.plot_confusion_matrix(class_mapping)
     
     if out_name:
         with open(out_name, mode="w", newline='') as file:
